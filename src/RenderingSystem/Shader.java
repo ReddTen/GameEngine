@@ -1,8 +1,8 @@
 package RenderingSystem;
 
 import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GL3;
 import com.jogamp.opengl.GLAutoDrawable;
-
 
 public class Shader {
 
@@ -48,6 +48,25 @@ public class Shader {
         }
 
         return shaderId;
+    }
+
+    // This method sets a uniform matrix in the active shader program
+// Inside your Shader class or wherever you manage OpenGL rendering
+    public void setUniformMatrix(String uniformName, float[] matrix, GLAutoDrawable drawable) {
+        GL3 gl = drawable.getGL().getGL3();
+
+        // Get the location (ID) of the uniform variable in the shader program
+        int uniformLocation = gl.glGetUniformLocation(programId, uniformName);
+
+        // Check if the uniform variable exists in the shader
+        if (uniformLocation == -1) {
+            // Handle the case where the uniform doesn't exist or has been optimized out
+            System.err.println("Uniform " + uniformName + " not found in shader program.");
+            return;
+        }
+
+        // Set the value of the uniform variable
+        gl.glUniformMatrix4fv(uniformLocation, 1, false, matrix, 0);
     }
 
     public void create(GLAutoDrawable drawable) {

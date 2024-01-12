@@ -16,6 +16,14 @@ public class Matrix4x4 {
             }
         }
     }
+    // Static method to create and return an identity matrix
+    public static Matrix4x4 identity() {
+        Matrix4x4 identityMatrix = new Matrix4x4();
+        for (int i = 0; i < 4; i++) {
+            identityMatrix.matrix[i][i] = 1.0f; // Set diagonal elements to 1
+        }
+        return identityMatrix;
+    }
 
     // Multiply this matrix by another matrix
     public void multiply(Matrix4x4 other) {
@@ -30,6 +38,19 @@ public class Matrix4x4 {
         }
 
         this.matrix = result;
+    }
+
+    // Static method to multiply two matrices
+    public static Matrix4x4 multiply(Matrix4x4 matrix1, Matrix4x4 matrix2) {
+        Matrix4x4 result = new Matrix4x4();
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                for (int k = 0; k < 4; k++) {
+                    result.matrix[i][j] += matrix1.matrix[i][k] * matrix2.matrix[k][j];
+                }
+            }
+        }
+        return result;
     }
 
     // Create a translation matrix
@@ -95,9 +116,17 @@ public class Matrix4x4 {
         return result;
     }
 
+    public float[] toFloatArray() {
+        float[] result = new float[16];
+        int index = 0;
+        for (int col = 0; col < 4; col++) {
+            for (int row = 0; row < 4; row++) {
+                result[index++] = matrix[row][col];
+            }
+        }
+        return result;
+    }
 
-    // Additional methods to create rotation matrices for Y and Z axes, and other utilities
-    // LookAt method
     public static Matrix4x4 lookAt(Vector3D eye, Vector3D center, Vector3D up) {
         Vector3D f = Vector3D.normalize(Vector3D.subtract(center, eye)); // forward
         Vector3D s = Vector3D.normalize(Vector3D.cross(f, up)); // right

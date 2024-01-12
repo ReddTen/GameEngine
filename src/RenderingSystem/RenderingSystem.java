@@ -34,18 +34,19 @@ public class RenderingSystem {
     // Render a frame
     public void render(Scene scene) {
         // Clear the screen
-        clearScreen();
+        GLAutoDrawable drawable = scene.getGLAutoDrawable();
+        clearScreen(drawable);
 
-        shader.use(scene.getGLAutoDrawable());
+        shader.use(drawable);
 
         // Set up camera and view projection
 
         // Render each object in the scene
         for (GameObject gameObject : scene.getGameObjects()) {
-            renderGameObject(gameObject, scene.getAutoDrawable());
+            renderGameObject(gameObject,drawable);
         }
 
-        shader.destroy(scene.getGLAutoDrawable());
+        shader.destroy(drawable);
     }
 
     private void clearScreen(GLAutoDrawable drawable) {
@@ -53,17 +54,35 @@ public class RenderingSystem {
         gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
     }
 
-    private void renderGameObject(GameObject gameObject) {
-        // Prepare model transformation
+    private void renderGameObject(GameObject gameObject, GLAutoDrawable drawable) {
+        GL2 gl = drawable.getGL().getGL2();
+
+        // Assuming your GameObject has methods to get its model matrix
+        float[] modelMatrix = gameObject.getModelMatrix();
 
         // Bind the shader program
+        shader.use(drawable);
 
-        // Set shader uniforms (e.g., transformation matrices, material properties)
+        // Set shader uniforms
+        // Assuming you have methods in your Shader class to set uniforms
+        shader.setUniformMatrix("modelMatrix", modelMatrix, GLAutoDrawable drawable);
+        // Set other uniforms as needed, such as view and projection matrices
 
-        // Bind vertex data and draw the object
+        // Bind vertex data
+        // Assuming your GameObject class has a method to bind its mesh data
+        gameObject.bindMeshData(gl);
 
-        // Unbind shader program
+        // Draw the object
+        // This could vary depending on how your GameObject's mesh data is stored
+        gl.glDrawArrays(GL2.GL_TRIANGLES, 0, gameObject.getVertexCount());
+
+        // Unbind shader program if necessary
+        shader.unuse(drawable);
+
+        // Unbind any bound resources to the GameObject if necessary
+        gameObject.unbindMeshData(gl);
     }
+
 
     // Resize the viewport
     public void resizeViewport(int width, int height, GLAutoDrawable drawable) {

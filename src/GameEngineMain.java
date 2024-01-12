@@ -1,16 +1,20 @@
 import RenderingSystem.*;
-
+import Game.*;
 public class GameEngineMain {
     public static void main(String[] args) {
 
         // Initialize core engine subsystems
         initializeRenderingSystem();
-        initializePhysicsSystem();
-        initializeAudioSystem();
-        initializeInputSystem();
-        initializeAssetManager();
+        //initializePhysicsSystem();
+        //initializeAudioSystem();
+        //initializeInputSystem();
+        //initializeAssetManager();
 
         // Load engine assets and set initial state
+        Scene scene = new Scene();
+        GameObject gameObject = new MyGameObject();// Replace with your actual GameObject class
+
+        scene.addGameObject(gameObject);
 
         // Enter the main engine loop
         while (!isEngineShutdownRequested()) {
@@ -37,7 +41,7 @@ public class GameEngineMain {
     private static void initializeRenderingSystem() {
         Window window = new Window("Game Engine", 800, 600);
         window.show();
-        RenderingSystem renderingSystem = new RenderingSystem(window);
+        renderingSystem = new RenderingSystem(window);
         // Setup rendering context, shaders, etc.
     }
 
@@ -61,7 +65,8 @@ public class GameEngineMain {
     }
 
     private static void render() {
-        // Render the current state of the engine/editor
+        RenderingSystem renderingSystem = new RenderingSystem(window);
+        renderingSystem.initialize(drawable, scene);
     }
 
     private static void performMaintenance() {
@@ -74,5 +79,10 @@ public class GameEngineMain {
 
     private static void cleanup() {
         // Cleanup resources, save state, shutdown subsystems
+        if (renderingSystem != null) {
+            // Cleanup the rendering system
+            renderingSystem.cleanup(/* Pass your GLAutoDrawable here */);
+        }
+        // Cleanup other subsystems as needed
     }
 }
